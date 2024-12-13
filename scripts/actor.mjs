@@ -1,4 +1,4 @@
-import { defaultHearingRange } from "./settings.mjs";
+import { defaultHearingRange, defaultStealthCapability } from "./settings.mjs";
 import { Matcher, convertUnits, toFeet } from "./utils.mjs";
 
 export default (Actor) => class extends Actor {
@@ -76,6 +76,9 @@ export default (Actor) => class extends Actor {
             this.detectionModes.hearing = Math.max(toFeet(typeof defaultHearingRange === "string"
                 ? new Roll(defaultHearingRange, this.getRollData({ deterministic: true })).evaluateSync().total
                 : defaultHearingRange, senses.units), 0);
+            this.detectionModes.stealthCapability = Math.max(toFeet(typeof defaultStealthCapability === "string"
+                ? new Roll(defaultStealthCapability, this.getRollData({ deterministic: true })).evaluateSync().total
+                : defaultStealthCapability, senses.units), 0);
         }
 
         const featRegistry = FEAT_REGISTRY[this.type];

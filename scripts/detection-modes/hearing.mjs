@@ -1,5 +1,23 @@
 import DetectionMode from "./base.mjs";
 
+function sizeDifficulty(tokenData) {
+    switch (tokenData.traits.size) {
+        case "tiny": return 0.5;
+        case "sm": return 0.8;
+        case "med": return 1;
+        case "lg": return 2;
+        case "hg": return 4;
+        case "grg": return 8;
+        default: return 1;
+    }
+}
+
+function targetTooStealthy(targetToken, sourceToken) {
+    let distance = Math.sqrt(Math.pow((targetToken.center.x - sourceToken.center.x), 2) + Math.pow((targetToken.center.y - sourceToken.center.y),2));
+    let hearableDistance = (sourceToken.actor.detectionModes.hearing * sizeDifficulty(targetToken) - targetToken.actor.detectionModes.stealthCapability / sizeDifficulty(targetToken));
+    return (distance > hearableDistance);
+}
+
 /**
  * The detection mode for hearing.
  */
@@ -32,7 +50,8 @@ export default class DetectionModeHearing extends DetectionMode {
             || target.document.hasStatusEffect(CONFIG.specialStatusEffects.ETHEREAL)
             && !source.document.hasStatusEffect(CONFIG.specialStatusEffects.ETHEREAL)
             || target.document.hasStatusEffect(CONFIG.specialStatusEffects.INAUDIBLE)
-            || target.document.hasStatusEffect(CONFIG.specialStatusEffects.PETRIFIED)) {
+            || target.document.hasStatusEffect(CONFIG.specialStatusEffects.PETRIFIED)
+            || targetTooStealthy(target, source)) {
             return false;
         }
 
